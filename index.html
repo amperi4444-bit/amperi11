@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Умный Калькулятор Систем Безопасности</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #0F172A;
+            --slate: #1E293B;
+            --slate-light: #334155;
+            --slate-border: #475569;
+            --text: #F8FAFC;
+            --text-muted: #CBD5E0;
+            --accent-cyan: #22D3EE;
+            --accent-orange: #F97316;
+            --success: #4FD1C5;
+            --danger: #EF4444;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px 10px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px 20px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--slate-border);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: clamp(22px, 5vw, 32px);
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            background: var(--slate);
+            padding: 8px;
+            border-radius: 10px;
+            border: 1px solid var(--slate-border);
+            overflow-x: auto;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px 16px;
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            background: rgba(34, 211, 238, 0.1);
+            color: var(--accent-cyan);
+        }
+
+        .tab.active {
+            background: var(--accent-cyan);
+            color: var(--navy);
+            box-shadow: 0 4px 12px rgba(34, 211, 238, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            background: var(--slate);
+            border: 1px solid var(--slate-border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+
+        .section:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 4px 16px rgba(34, 211, 238, 0.15);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--navy);
+            border: 1px solid var(--slate-border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15);
+        }
+
+        .counter {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--navy);
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--slate-border);
+        }
+
+        .counter button {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            border: none;
+            background: var(--slate-light);
+            color: var(--text);
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .counter button:hover {
+            background: var(--accent-cyan);
+            color: var(--navy);
+            transform: scale(1.05);
+        }
+
+        .counter button:active {
+            transform: scale(0.95);
+        }
+
+        .counter input {
+            flex: 1;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 18px;
+            font-weight: 700;
+            padding: 0;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .radio-label {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px;
+            background: var(--navy);
+            border: 2px solid var(--slate-border);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .radio-label:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(34, 211, 238, 0.05);
+        }
+
+        .radio-label input {
+            display: none;
+        }
+
+        .radio-label input:checked + span {
+            color: var(--navy);
+        }
+
+        .radio-label:has(input:checked) {
+            background: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            color: var(--navy);
+            font-weight: 700;
+        }
+
+        .submit-section {
+            position: sticky;
+            bottom: 20px;
+            background: var(--slate);
+            border: 1px solid var(--slate-border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent-orange), #FB923C);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(249, 115, 22, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.6);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .total-preview {
+            text-align: center;
+            margin-bottom: 16px;
+            padding: 16px;
+            background: var(--navy);
+            border-radius: 8px;
+            border: 1px solid var(--slate-border);
+        }
+
+        .total-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .total-amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .dev-notice {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        @media (max-width: 640px) {
+            .radio-group {
+                flex-direction: column;
+            }
+            
+            .radio-label {
+                min-width: 100%;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Скрыть стрелки у number input */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛡️ Умный Калькулятор Систем Безопасности</h1>
+            <p class="subtitle">Калькулятор сметы 📊 (BYN)</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="cctv">🎥 Видео</button>
+            <button class="tab" data-tab="skud">🔑 СКУД</button>
+            <button class="tab" data-tab="fire">🔥 Пожарная</button>
+            <button class="tab" data-tab="security">🛡️ Охрана</button>
+        </div>
+
+        <!-- Общая информация -->
+        <div class="section">
+            <div class="form-group">
+                <label>Имя заказчика / Компания</label>
+                <input type="text" id="client_name" placeholder="Введите имя или название компании">
+            </div>
+        </div>
+
+        <!-- ВИДЕОНАБЛЮДЕНИЕ -->
+        <div id="tab-cctv" class="tab-content active">
+            <div class="section">
+                <div class="section-title">📹 Класс оборудования</div>
+                <div class="form-group">
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="equip_class" value="tiandy" checked>
+                            <span>Бюджетный (Tiandy)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="equip_class" value="hiwatch">
+                            <span>Средний класс (HiWatch/Dahua)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="equip_class" value="premium">
+                            <span>Премиум (IP с аналитикой)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🎥 Камеры и коробки</div>
+                <div class="form-group">
+                    <label>🎥 Внутренние камеры</label>
+                    <div class="counter">
+                        <button type="button" onclick="changeValue('indoor', -1)">−</button>
+                        <input type="number" id="indoor" value="2" min="0" max="100" readonly>
+                        <button type="button" onclick="changeValue('indoor', 1)">+</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>📹 Уличные камеры</label>
+                    <div class="counter">
+                        <button type="button" onclick="changeValue('outdoor', -1)">−</button>
+                        <input type="number" id="outdoor" value="2" min="0" max="100" readonly>
+                        <button type="button" onclick="changeValue('outdoor', 1)">+</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Монтажные коробки для камер</label>
+                    <select id="boxes">
+                        <option value="none">Не нужны</option>
+                        <option value="box1">1 шт.</option>
+                        <option value="box2">2 шт.</option>
+                        <option value="box3">3 шт.</option>
+                        <option value="box4">4 шт.</option>
+                        <option value="box5">5 шт.</option>
+                        <option value="box6">6 шт.</option>
+                        <option value="box7">7 шт.</option>
+                        <option value="box8">8 шт.</option>
+                        <option value="box9">9 шт.</option>
+                        <option value="box10">10 шт.</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">💾 Сетевое оборудование и Архив</div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Регистратор PoE</label>
+                        <select id="dvr_poe">
+                            <option value="none">НЕ НУЖЕН</option>
+                            <option value="poe4">4 порта</option>
+                            <option value="poe6">6 портов</option>
+                            <option value="poe8">8 портов</option>
+                            <option value="poe16">16 портов</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Регистратор без PoE</label>
+                        <select id="dvr_no_poe">
+                            <option value="none">НЕ НУЖЕН</option>
+                            <option value="ch4">4 канала</option>
+                            <option value="ch8">8 каналов</option>
+                            <option value="ch16">16 каналов</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Коммутатор PoE</label>
+                        <select id="switch_poe">
+                            <option value="none">НЕ НУЖЕН</option>
+                            <option value="poe4">4 порта</option>
+                            <option value="poe6">6 портов</option>
+                            <option value="poe8">8 портов</option>
+                            <option value="poe16">16 портов</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Жесткий диск (Архив)</label>
+                        <select id="hdd">
+                            <option value="none">Не нужен</option>
+                            <option value="1tb">1 Тбайт 💾</option>
+                            <option value="2tb">2 Тбайт 💾</option>
+                            <option value="4tb">4 Тбайт 💾</option>
+                            <option value="6tb">6 Тбайт 💾</option>
+                            <option value="8tb">8 Тбайт 💾</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Монитор</label>
+                        <select id="monitor">
+                            <option value="no">Не нужен</option>
+                            <option value="yes">Нужен</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Удаленный доступ с приложения</label>
+                        <select id="remote_access">
+                            <option value="no">Не нужен</option>
+                            <option value="yes">Нужен</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">📏 Прокладка кабеля (0 - 300 м)</div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Место прокладки</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="placement" value="wall" checked>
+                                <span>Стена</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="placement" value="ceiling">
+                                <span>Потолок</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Тип основания</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="base_type" value="drywall" checked>
+                                <span>Гипсокартон</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="base_type" value="brick">
+                                <span>Кирпич</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="base_type" value="concrete">
+                                <span>Бетон</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>〰️ В гофре ПВХ</label>
+                    <input type="number" id="gofra" value="10" min="0" max="300">
+                    <select id="gofra_size" style="margin-top: 8px;">
+                        <option value="none">Не нужна</option>
+                        <option value="16" selected>16 мм</option>
+                        <option value="20">20 мм</option>
+                        <option value="25">25 мм</option>
+                        <option value="32">32 мм</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📦 В коробе ПВХ</label>
+                    <input type="number" id="korob" value="0" min="0" max="300">
+                    <select id="korob_size" style="margin-top: 8px;">
+                        <option value="none">Не нужен</option>
+                        <option value="16">16 мм</option>
+                        <option value="20">20 мм</option>
+                        <option value="25">25 мм</option>
+                        <option value="32">32 мм</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>💨 По воздуху</label>
+                    <input type="number" id="air" value="0" min="0" max="300">
+                </div>
+                <div class="form-group">
+                    <label>🧱 В штробе</label>
+                    <input type="number" id="shtroba" value="0" min="0" max="300">
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🔌 Материалы и расходники</div>
+                <div class="form-group">
+                    <label>🔌 Кабель UTP 4*2*0.52 (метры)</label>
+                    <input type="number" id="utp_cable" value="0" min="0" max="1000">
+                </div>
+                <div class="form-group">
+                    <label>RJ-45 (шт)</label>
+                    <select id="connectors">
+                        <option value="0">Не нужен</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                    </select>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Стяжки (уп)</label>
+                        <select id="zip_ties">
+                            <option value="none">Не нужны</option>
+                            <option value="pack0.5">0.5 уп.</option>
+                            <option value="pack1">1 уп.</option>
+                            <option value="pack1.5">1.5 уп.</option>
+                            <option value="pack2">2 уп.</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Изолента (шт)</label>
+                        <select id="tape">
+                            <option value="none">Не нужна</option>
+                            <option value="pc0.3">0.3 шт.</option>
+                            <option value="pc0.5">0.5 шт.</option>
+                            <option value="pc1">1 шт.</option>
+                            <option value="pc2">2 шт.</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">⚙️ Условия монтажа</div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Высотность</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="height" value="normal" checked>
+                                <span>Обычная (&lt;3м)</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="height" value="high">
+                                <span>Высотные (+30%)</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Стесненность</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="congested" value="no" checked>
+                                <span>Не брать</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="congested" value="yes">
+                                <span>Брать (+25%)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- СКУД -->
+        <div id="tab-skud" class="tab-content">
+            <div class="section">
+                <div class="section-title">🔑 Контроллеры и Замки</div>
+                <div class="form-group">
+                    <label>Контроллер (шт / дверей)</label>
+                    <select id="controller">
+                        <option value="none">Не нужен</option>
+                        <option value="1door">1 дверь</option>
+                        <option value="2door">2 двери</option>
+                        <option value="3door">3 двери</option>
+                        <option value="4door">4 двери</option>
+                        <option value="5door">5 дверей</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Замки электромагнитные</label>
+                    <select id="maglock">
+                        <option value="none">Не нужен</option>
+                        <option value="100kg">Магнитный замок 100 кг</option>
+                        <option value="180kg">Магнитный замок 180 кг</option>
+                        <option value="250kg">Магнитный замок 250 кг</option>
+                        <option value="300kg">Магнитный замок 300 кг</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Электромеханические защёлки</label>
+                    <select id="latch">
+                        <option value="none">Не нужен</option>
+                        <option value="latch_no">Нормально открытого типа (НО)</option>
+                        <option value="latch_nc">Нормально закрытого типа (НЗ)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Ригельные замки</label>
+                    <select id="bolt">
+                        <option value="none">Не нужен</option>
+                        <option value="bolt_no">Нормально открытого типа (НО)</option>
+                        <option value="bolt_nc">Нормально закрытого типа (НЗ)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🚪 Дверной доводчик - Масса створки, кг</label>
+                    <select id="closer_weight">
+                        <option value="none">Не нужен</option>
+                        <option value="80kg">до 80 кг</option>
+                        <option value="100kg">до 100 кг</option>
+                        <option value="120kg">до 120 кг</option>
+                        <option value="140kg">до 140 кг</option>
+                        <option value="160kg">до 160 кг</option>
+                        <option value="300kg">до 300 кг</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Количество доводчиков (шт.)</label>
+                    <select id="closer_qty">
+                        <option value="0">Не нужен</option>
+                        <option value="1">1 шт.</option>
+                        <option value="2">2 шт.</option>
+                        <option value="3">3 шт.</option>
+                        <option value="4">4 шт.</option>
+                        <option value="5">5 шт.</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">📱 Периферия и Ключи</div>
+                <div class="form-group">
+                    <label>Считыватели</label>
+                    <select id="readers">
+                        <option value="0">Не нужен</option>
+                        <option value="1">1 шт.</option>
+                        <option value="2">2 шт.</option>
+                        <option value="3">3 шт.</option>
+                        <option value="4">4 шт.</option>
+                        <option value="5">5 шт.</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Кнопки выхода</label>
+                    <select id="exit_buttons">
+                        <option value="0">Не нужен</option>
+                        <option value="1">1 шт.</option>
+                        <option value="2">2 шт.</option>
+                        <option value="3">3 шт.</option>
+                        <option value="4">4 шт.</option>
+                        <option value="5">5 шт.</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Тип ключей</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="key_type" value="fob" checked>
+                            <span>Брелки</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="key_type" value="card">
+                            <span>Карточки</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Кол-во ключей (0-100)</label>
+                    <input type="number" id="keys_qty" value="0" min="0" max="100">
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🔋 Питание и Разблокировка</div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Блоки питания</label>
+                        <select id="psu">
+                            <option value="none">Не нужен</option>
+                            <option value="1ah">1 Ah</option>
+                            <option value="2ah">2 Ah</option>
+                            <option value="3ah">3 Ah</option>
+                            <option value="4ah">4 Ah</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Аккумуляторная батарея</label>
+                        <select id="battery">
+                            <option value="none">Не нужен</option>
+                            <option value="7ah">7 Ah</option>
+                            <option value="18ah">18 Ah</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Кнопка разблокировки двери ST ER-115</label>
+                    <select id="unlock_indoor">
+                        <option value="0">Не нужен</option>
+                        <option value="1">1 шт.</option>
+                        <option value="2">2 шт.</option>
+                        <option value="3">3 шт.</option>
+                        <option value="4">4 шт.</option>
+                        <option value="5">5 шт.</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Кнопка разблокировки уличная с ключом</label>
+                    <select id="unlock_outdoor">
+                        <option value="0">Не нужен</option>
+                        <option value="1">1 шт.</option>
+                        <option value="2">2 шт.</option>
+                        <option value="3">3 шт.</option>
+                        <option value="4">4 шт.</option>
+                        <option value="5">5 шт.</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Разблокировка дверей при пожаре УК/ВК</label>
+                    <select id="fire_unlock">
+                        <option value="no">Не нужен</option>
+                        <option value="yes">Нужен</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🔧 Монтаж и Кабель СКУД</div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Место прокладки</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="placement_skud" value="wall" checked>
+                                <span>Стена</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="placement_skud" value="ceiling">
+                                <span>Потолок</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Тип основания</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="base_type_skud" value="drywall" checked>
+                                <span>Гипсокартон</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="base_type_skud" value="brick">
+                                <span>Кирпич</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="base_type_skud" value="concrete">
+                                <span>Бетон</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Монтажные коробки</label>
+                    <select id="skud_boxes">
+                        <option value="0">Не нужен</option>
+                        <option value="1">1 шт.</option>
+                        <option value="2">2 шт.</option>
+                        <option value="3">3 шт.</option>
+                        <option value="4">4 шт.</option>
+                        <option value="5">5 шт.</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>〰️ В гофре ПВХ</label>
+                    <input type="number" id="gofra_skud" value="0" min="0" max="300">
+                    <select id="gofra_size_skud" style="margin-top: 8px;">
+                        <option value="none">Не нужна</option>
+                        <option value="16">16 мм</option>
+                        <option value="20">20 мм</option>
+                        <option value="25">25 мм</option>
+                        <option value="32">32 мм</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📦 В коробе ПВХ</label>
+                    <input type="number" id="korob_skud" value="0" min="0" max="300">
+                    <select id="korob_size_skud" style="margin-top: 8px;">
+                        <option value="none">Не нужен</option>
+                        <option value="16">16 мм</option>
+                        <option value="20">20 мм</option>
+                        <option value="25">25 мм</option>
+                        <option value="32">32 мм</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>💨 По воздуху</label>
+                    <input type="number" id="air_skud" value="0" min="0" max="300">
+                </div>
+                <div class="form-group">
+                    <label>🧱 В штробе</label>
+                    <input type="number" id="shtroba_skud" value="0" min="0" max="300">
+                </div>
+                <div class="form-group">
+                    <label>🔌 Кабель UTP 4*2*0.52 (метры)</label>
+                    <input type="number" id="utp_skud" value="0" min="0" max="1000">
+                </div>
+                <div class="form-group">
+                    <label>🔌 Провод ШВВП 2*0,75мм (метры)</label>
+                    <input type="number" id="shvvp" value="0" min="0" max="1000">
+                </div>
+                <div class="form-group">
+                    <label>🔌 Кабель ВВГнг 3*1,5мм (метры)</label>
+                    <input type="number" id="vvgng" value="0" min="0" max="1000">
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">⚙️ Условия монтажа СКУД</div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Высотность</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="height_skud" value="normal" checked>
+                                <span>Обычная (&lt;3м)</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="height_skud" value="high">
+                                <span>Высотные (+30%)</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Стесненность</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="congested_skud" value="no" checked>
+                                <span>Не брать</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="congested_skud" value="yes">
+                                <span>Брать (+25%)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ПОЖАРНАЯ -->
+        <div id="tab-fire" class="tab-content">
+            <div class="dev-notice">
+                🔥 Пожарная сигнализация (ТКП)<br>
+                Раздел находится в разработке под нормы ТКП.
+            </div>
+        </div>
+
+        <!-- ОХРАННАЯ -->
+        <div id="tab-security" class="tab-content">
+            <div class="dev-notice">
+                🛡️ Охранная сигнализация (ТКП)<br>
+                Раздел находится в разработке под нормы ТКП.
+            </div>
+        </div>
+
+        <!-- КНОПКИ ОТПРАВКИ -->
+        <div class="submit-section">
+            <div class="section-title" style="text-align: center; margin-bottom: 16px;">📋 Итоги сметы и КП</div>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px; font-size: 13px;">
+                Нажмите кнопку для формирования коммерческого предложения и детальной сметы
+            </p>
+            <button class="submit-btn" onclick="sendData()">
+                📄 Сформировать КП и Смету
+            </button>
+        </div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // Инициализация Telegram WebApp
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.MainButton.hide();
+
+        // Переключение вкладок
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+                
+                // Убираем активный класс со всех вкладок
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Добавляем активный класс выбранной вкладке
+                tab.classList.add('active');
+                document.getElementById(`tab-${targetTab}`).classList.add('active');
+            });
+        });
+
+        // Функция изменения значения счетчика
+        function changeValue(id, delta) {
+            const input = document.getElementById(id);
+            let value = parseInt(input.value) || 0;
+            const min = parseInt(input.min) || 0;
+            const max = parseInt(input.max) || 100;
+            
+            value = Math.max(min, Math.min(max, value + delta));
+            input.value = value;
+        }
+
+        // Получение значения радио-группы
+        function getRadioValue(name) {
+            const radio = document.querySelector(`input[name="${name}"]:checked`);
+            return radio ? radio.value : null;
+        }
+
+        // Сбор всех данных формы
+        function collectFormData() {
+            const activeTab = document.querySelector('.tab.active').dataset.tab;
+            
+            const data = {
+                calc_type: activeTab,
+                client_name: document.getElementById('client_name').value || 'Частное лицо'
+            };
+
+            // Данные видеонаблюдения
+            if (activeTab === 'cctv') {
+                data.equip_class = getRadioValue('equip_class');
+                data.indoor = document.getElementById('indoor').value;
+                data.outdoor = document.getElementById('outdoor').value;
+                data.boxes = document.getElementById('boxes').value;
+                data.dvr_poe = document.getElementById('dvr_poe').value;
+                data.dvr_no_poe = document.getElementById('dvr_no_poe').value;
+                data.switch_poe = document.getElementById('switch_poe').value;
+                data.hdd = document.getElementById('hdd').value;
+                data.monitor = document.getElementById('monitor').value;
+                data.remote_access = document.getElementById('remote_access').value;
+                data.placement = getRadioValue('placement');
+                data.base_type = getRadioValue('base_type');
+                data.gofra = document.getElementById('gofra').value;
+                data.gofra_size = document.getElementById('gofra_size').value;
+                data.korob = document.getElementById('korob').value;
+                data.korob_size = document.getElementById('korob_size').value;
+                data.air = document.getElementById('air').value;
+                data.shtroba = document.getElementById('shtroba').value;
+                data.utp_cable = document.getElementById('utp_cable').value;
+                data.connectors = document.getElementById('connectors').value;
+                data.zip_ties = document.getElementById('zip_ties').value;
+                data.tape = document.getElementById('tape').value;
+                data.height = getRadioValue('height');
+                data.congested = getRadioValue('congested');
+            }
+
+            // Данные СКУД
+            if (activeTab === 'skud') {
+                data.controller = document.getElementById('controller').value;
+                data.maglock = document.getElementById('maglock').value;
+                data.latch = document.getElementById('latch').value;
+                data.bolt = document.getElementById('bolt').value;
+                data.closer_weight = document.getElementById('closer_weight').value;
+                data.closer_qty = document.getElementById('closer_qty').value;
+                data.readers = document.getElementById('readers').value;
+                data.exit_buttons = document.getElementById('exit_buttons').value;
+                data.key_type = getRadioValue('key_type');
+                data.keys_qty = document.getElementById('keys_qty').value;
+                data.psu = document.getElementById('psu').value;
+                data.battery = document.getElementById('battery').value;
+                data.unlock_indoor = document.getElementById('unlock_indoor').value;
+                data.unlock_outdoor = document.getElementById('unlock_outdoor').value;
+                data.fire_unlock = document.getElementById('fire_unlock').value;
+                data.skud_boxes = document.getElementById('skud_boxes').value;
+                data.placement_skud = getRadioValue('placement_skud');
+                data.base_type_skud = getRadioValue('base_type_skud');
+                data.gofra_skud = document.getElementById('gofra_skud').value;
+                data.gofra_size_skud = document.getElementById('gofra_size_skud').value;
+                data.korob_skud = document.getElementById('korob_skud').value;
+                data.korob_size_skud = document.getElementById('korob_size_skud').value;
+                data.air_skud = document.getElementById('air_skud').value;
+                data.shtroba_skud = document.getElementById('shtroba_skud').value;
+                data.utp_skud = document.getElementById('utp_skud').value;
+                data.shvvp = document.getElementById('shvvp').value;
+                data.vvgng = document.getElementById('vvgng').value;
+                data.height_skud = getRadioValue('height_skud');
+                data.congested_skud = getRadioValue('congested_skud');
+            }
+
+            return data;
+        }
+
+        // Отправка данных в бот
+        function sendData() {
+            const data = collectFormData();
+            const activeTab = document.querySelector('.tab.active').dataset.tab;
+            
+            // Проверка на разработку
+            if (activeTab === 'fire' || activeTab === 'security') {
+                alert('⚠️ Этот раздел находится в разработке');
+                return;
+            }
+
+            // Отправка данных через Telegram WebApp API
+            tg.sendData(JSON.stringify(data));
+        }
+    </script>
+</body>
+</html>
